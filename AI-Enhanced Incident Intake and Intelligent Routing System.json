@@ -1,0 +1,1617 @@
+{
+  "name": "AI-Enhanced Incident Intake and Intelligent Routing System",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "775d49b9-1d43-47d7-a604-06feaef26be7",
+      "name": "Email Incident Trigger",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -1296,
+        3312
+      ],
+      "credentials": {
+        "imap": {
+          "id": "1LSyHpOluFk4JxHb",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "7b0edbe2-80fa-4699-a74b-5e30a8ad72b4",
+        "options": {}
+      },
+      "id": "b14d64ad-68a4-46b6-806d-a12ab77fcddc",
+      "name": "Webhook Incident Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1072,
+        3600
+      ],
+      "webhookId": "7b0edbe2-80fa-4699-a74b-5e30a8ad72b4"
+    },
+    {
+      "parameters": {
+        "formTitle": "Incident Report Form",
+        "formDescription": "Submit an incident report for processing",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "title",
+              "fieldLabel": "Incident Title"
+            },
+            {
+              "fieldName": "description",
+              "fieldLabel": "Incident Description",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldName": "category",
+              "fieldLabel": "Category",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Infrastructure"
+                  },
+                  {
+                    "option": "Security"
+                  },
+                  {
+                    "option": "IT Support"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldName": "severity",
+              "fieldLabel": "Severity",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Critical"
+                  },
+                  {
+                    "option": "High"
+                  },
+                  {
+                    "option": "Medium"
+                  },
+                  {
+                    "option": "Low"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "29ffdad8-4821-4f68-919d-befd672afeb4",
+      "name": "Form Incident Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        -1072,
+        3888
+      ],
+      "webhookId": "64837941-7941-469b-a953-c3ea2296187c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5a41b7d3-05eb-48d4-95af-53c34a8b2126",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -848,
+        3504
+      ]
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "id": "f9d5fcc1-5bc4-4984-a98c-1f044938d6db",
+      "name": "Extract Email Attachments",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1072,
+        3312
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "source",
+              "value": "email",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "title",
+              "value": "={{ $('Email Incident Trigger').item.json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "description",
+              "value": "={{ $('Email Incident Trigger').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "reporter_email",
+              "value": "={{ $('Email Incident Trigger').item.json.from }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "received_at",
+              "value": "={{ $('Email Incident Trigger').item.json.date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "c60e1c5f-c8cd-4dbb-9ea8-eb88f2d65b7a",
+      "name": "Normalize Email Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3312
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "source",
+              "value": "webhook",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "title",
+              "value": "={{ $json.title || 'Untitled Incident' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "description",
+              "value": "={{ $json.description || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "category",
+              "value": "={{ $json.category || 'Other' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "severity",
+              "value": "={{ $json.severity || 'Medium' }}",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "received_at",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "12ff585b-43c6-47ce-b27e-b3fe575a47b8",
+      "name": "Normalize Webhook Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "source",
+              "value": "form",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "category",
+              "value": "={{ $json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "severity",
+              "value": "={{ $json.severity }}",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "received_at",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "a2d10bca-6d28-438e-be66-82f04dbc500d",
+      "name": "Normalize Form Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "b11c17af-1a74-41b8-a25a-cbfa2b78a40f",
+      "name": "Merge All Incident Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -624,
+        3680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "condition-2",
+              "leftValue": "={{ $json.description }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "159cbb7f-5e70-4211-8c09-701d88582760",
+      "name": "Validate Input Data",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "incident_id",
+              "value": "={{ $now.toUnixInteger() }}-{{ $json.source }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "workflow_version",
+              "value": "1.0",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "processed_at",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "650753cb-485d-42fa-a839-fb7bc7c044d8",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "raw_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "source": "={{ $json.source }}",
+            "title": "={{ $json.title }}",
+            "description": "={{ $json.description }}",
+            "received_at": "={{ $json.received_at }}",
+            "processed_at": "={{ $json.processed_at }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "8f365193-4d35-4ca5-97b5-b2055b368c56",
+      "name": "Log Raw Incident",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        48,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "577b4bcd-6bfb-48ed-8003-840903a59735",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        3920
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "78WSdnp2j0j4KzOg",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"category\": \"Infrastructure\",\n\t\"severity\": \"Critical\",\n\t\"priority_score\": 9,\n\t\"confidence\": 0.95,\n\t\"reasoning\": \"Explanation of classification\"\n}"
+      },
+      "id": "6063fbd1-aa1d-44c7-b039-dd4595bfda2f",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        3936
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ 'Analyze this incident and classify it:\\n\\nTitle: ' + $json.title + '\\nDescription: ' + $json.description + '\\n\\nProvide category (Infrastructure/Security/IT Support/Other), severity (Critical/High/Medium/Low), priority score (1-10), and confidence level (0-1).' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert incident classifier. Analyze the incident details and provide structured classification with category, severity, priority score (1-10), and confidence level (0-1)."
+        }
+      },
+      "id": "fe5393e2-f1df-477f-b7c3-021caf342721",
+      "name": "AI Incident Classifier",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => {\n  const output = item.json.output || item.json;\n  \n  // Validate required fields\n  const validated = {\n    category: output.category || 'Other',\n    severity: output.severity || 'Medium',\n    priority_score: output.priority_score || 5,\n    confidence: output.confidence || 0.5,\n    reasoning: output.reasoning || 'No reasoning provided',\n    ...item.json\n  };\n  \n  return { json: validated };\n});"
+      },
+      "id": "391eab1d-2e03-4e6c-a9b1-a2fdb52f1624",
+      "name": "Validate AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.confidence }}",
+              "rightValue": "0.7",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3d4c48ea-2ccf-420a-a9d1-136075aa1ead",
+      "name": "Check AI Confidence",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        848,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "category",
+              "value": "Other",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "severity",
+              "value": "Medium",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "priority_score",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "id-4",
+              "name": "confidence",
+              "value": 0.5,
+              "type": "number"
+            },
+            {
+              "id": "id-5",
+              "name": "ai_classification_failed",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "1070e614-b348-4a40-80db-ed6cc1bdb675",
+      "name": "Apply Fallback Defaults",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        3600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "final_category",
+              "value": "={{ $json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "final_severity",
+              "value": "={{ $json.severity }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "final_priority",
+              "value": "={{ $json.priority_score }}",
+              "type": "number"
+            },
+            {
+              "id": "id-4",
+              "name": "ai_confidence",
+              "value": "={{ $json.confidence }}",
+              "type": "number"
+            },
+            {
+              "id": "id-5",
+              "name": "classification_method",
+              "value": "ai",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "fdd39e1f-37de-4809-ae5f-8a54486a92e7",
+      "name": "Prepare Final Incident Schema",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        3792
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "ea3f6215-f0d8-42ed-b1f4-4488bcf62d2e",
+      "name": "Merge Validated Incidents",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1296,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.final_category }}",
+                    "rightValue": "Infrastructure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.final_severity }}",
+                    "rightValue": "Critical",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Critical Infrastructure"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.final_category }}",
+                    "rightValue": "Security",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Security Incidents"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.final_category }}",
+                    "rightValue": "IT Support",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Standard IT Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ true }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Default Route"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "551566d0-d19e-48d3-aba1-874c9c65c829",
+      "name": "Route by Category and Severity",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        3664
+      ]
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "mode": "list",
+          "value": "<__PLACEHOLDER_VALUE__PLACEHOLDER_PROJECT__>"
+        },
+        "issueType": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Bug"
+        },
+        "summary": "={{ '[CRITICAL] ' + $json.title }}",
+        "additionalFields": {
+          "description": "={{ $json.description + '\\n\\nPriority Score: ' + $json.final_priority + '\\nAI Confidence: ' + $json.ai_confidence }}",
+          "priority": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Highest"
+          }
+        }
+      },
+      "id": "c81c5cfd-7692-4cde-851b-125222f76488",
+      "name": "Create Jira Ticket - Critical",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        3312
+      ]
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "mode": "list",
+          "value": "<__PLACEHOLDER_VALUE__PLACEHOLDER_PROJECT__>"
+        },
+        "issueType": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Security"
+        },
+        "summary": "={{ '[SECURITY] ' + $json.title }}",
+        "additionalFields": {
+          "description": "={{ $json.description + '\\n\\nSeverity: ' + $json.final_severity + '\\nPriority Score: ' + $json.final_priority }}",
+          "priority": {
+            "__rl": true,
+            "mode": "id",
+            "value": "High"
+          }
+        }
+      },
+      "id": "24c54d5e-0696-4b9d-b4b1-8d36cc43fb28",
+      "name": "Create Jira Ticket - Security",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        3504
+      ]
+    },
+    {
+      "parameters": {
+        "description": "={{ $json.title + '\\n\\n' + $json.description }}",
+        "additionalFields": {
+          "status": "normal",
+          "subject": "={{ $json.title }}",
+          "type": "incident"
+        }
+      },
+      "id": "cf9c3318-dcd9-4066-84c9-0b51fb38bf56",
+      "name": "Create Zendesk Ticket - Standard",
+      "type": "n8n-nodes-base.zendesk",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "incident",
+        "operation": "create",
+        "short_description": "={{ $json.title }}",
+        "additionalFields": {
+          "description": "={{ $json.description }}",
+          "impact": 3,
+          "urgency": 3
+        }
+      },
+      "id": "baebd3d0-435e-4e98-937e-69e0e3873d3e",
+      "name": "Create ServiceNow Ticket - Default",
+      "type": "n8n-nodes-base.serviceNow",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "<__PLACEHOLDER_VALUE__PLACEHOLDER_CHANNEL__>"
+        },
+        "text": "={{ '🚨 *CRITICAL INCIDENT ALERT*\n\n*Title:* ' + $json.title + '\n*Category:* ' + $json.final_category + '\n*Severity:* ' + $json.final_severity + '\n*Priority:* ' + $json.final_priority + '/10\n*Jira Ticket:* ' + $('Create Jira Ticket - Critical').item.json.key }}",
+        "otherOptions": {}
+      },
+      "id": "03a3bb1e-2f84-4057-8e24-23104f456cdb",
+      "name": "Notify Slack - Critical",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2192,
+        3312
+      ],
+      "webhookId": "b9c17bd6-44c1-485c-bb74-1e5bfc742cd0"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__SECURITY_CHANNEL__>"
+        },
+        "text": "={{ '🔒 *SECURITY INCIDENT*\n\n*Title:* ' + $json.title + '\n*Severity:* ' + $json.final_severity + '\n*Priority:* ' + $json.final_priority + '/10\n*Jira Ticket:* ' + $('Create Jira Ticket - Security').item.json.key }}",
+        "otherOptions": {}
+      },
+      "id": "8c4c94fd-2c95-4c50-b9ee-a031f2772a1f",
+      "name": "Notify Slack - Security",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        2192,
+        3504
+      ],
+      "webhookId": "300795d2-de4f-440c-b52f-a8f1c945aba8"
+    },
+    {
+      "parameters": {
+        "resource": "chatMessage",
+        "chatId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__PLACEHOLDER_CHANNEL__>"
+        },
+        "message": "={{ '📋 Standard IT Support Incident\\n\\nTitle: ' + $json.title + '\\nCategory: ' + $json.final_category + '\\nSeverity: ' + $json.final_severity + '\\nZendesk Ticket Created' }}",
+        "options": {}
+      },
+      "id": "777bee60-d9a9-4c45-80b8-09f982703df1",
+      "name": "Notify Teams - Standard",
+      "type": "n8n-nodes-base.microsoftTeams",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        3696
+      ],
+      "webhookId": "00ea63d4-6590-4f4e-80b8-a10326c97c71"
+    },
+    {
+      "parameters": {
+        "resource": "chatMessage",
+        "chatId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__PLACEHOLDER_CHANNEL__>"
+        },
+        "message": "={{ '📝 Incident Routed to Default Handler\\n\\nTitle: ' + $json.title + '\\nCategory: ' + $json.final_category + '\\nServiceNow Ticket Created' }}",
+        "options": {}
+      },
+      "id": "3de51652-e9c3-4b16-9063-89a7989c974c",
+      "name": "Notify Teams - Default",
+      "type": "n8n-nodes-base.microsoftTeams",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        3888
+      ],
+      "webhookId": "83e896f7-d5ac-4fe6-92a1-23bee35f67c4"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "processed_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "title": "={{ $json.title }}",
+            "category": "={{ $json.category }}",
+            "severity": "={{ $json.severity }}",
+            "priority_score": "={{ $json.priority_score }}",
+            "jira_ticket": "={{ $('Create Jira Ticket - Critical').item.json.key }}",
+            "processed_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "8366295f-4ffc-4524-b381-1bff4c75e7cd",
+      "name": "Store Incident - Critical",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2416,
+        3312
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "processed_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "title": "={{ $json.title }}",
+            "category": "={{ $json.category }}",
+            "severity": "={{ $json.severity }}",
+            "priority_score": "={{ $json.priority_score }}",
+            "jira_ticket": "={{ $('Create Jira Ticket - Security').item.json.key }}",
+            "processed_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "0b049f02-86de-45dd-a3ee-cba9acb327ab",
+      "name": "Store Incident - Security",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2416,
+        3504
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "processed_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "title": "={{ $json.title }}",
+            "category": "={{ $json.category }}",
+            "severity": "={{ $json.severity }}",
+            "priority_score": "={{ $json.priority_score }}",
+            "zendesk_ticket": "={{ $('Create Zendesk Ticket - Standard').item.json.id }}",
+            "processed_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "c129d673-13ee-465f-9f85-adf749208ef1",
+      "name": "Store Incident - Standard",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2416,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "processed_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "title": "={{ $json.title }}",
+            "category": "={{ $json.category }}",
+            "severity": "={{ $json.severity }}",
+            "priority_score": "={{ $json.priority_score }}",
+            "servicenow_ticket": "={{ $('Create ServiceNow Ticket - Default').item.json.number }}",
+            "processed_at": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "0d41f18b-2132-4d2e-a5ed-0a30c1ae79f6",
+      "name": "Store Incident - Default",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2416,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "workflow_logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_id": "={{ $json.incident_id }}",
+            "step_name": "classification_complete",
+            "timestamp": "={{ $now }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "3d31edc5-0d8e-4778-81f6-89da2c249a03",
+      "name": "Log Workflow Step",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1520,
+        3696
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a0c8eac8-5d1d-4905-9904-6424aae370b2",
+      "name": "Error Handler Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1296,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "error_logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "workflow_id": "={{ $workflow.id }}",
+            "error_message": "={{ $json.error.message }}",
+            "error_stack": "={{ $json.error.stack }}",
+            "node_name": "={{ $json.node.name }}",
+            "timestamp": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_stack",
+              "displayName": "error_stack",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "node_name",
+              "displayName": "node_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8c29e2b8-5617-4e8b-a9ef-9837074be2fb",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1072,
+        4112
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "<__PLACEHOLDER_VALUE__ERROR_CHANNEL__>"
+        },
+        "text": "={{ '❌ *WORKFLOW ERROR*\n\n*Workflow:* ' + $json.workflow.name + '\n*Node:* ' + $json.node.name + '\n*Error:* ' + $json.error.message + '\n*Time:* ' + $now.toISO() }}",
+        "otherOptions": {}
+      },
+      "id": "83407a19-e8bf-4534-9c11-73a188d6ab93",
+      "name": "Alert Error to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        -848,
+        4112
+      ],
+      "webhookId": "8ca6ea22-032c-4e92-aca4-163079d10a10"
+    },
+    {
+      "parameters": {},
+      "id": "320f7d1b-ecc1-4240-bc5e-a44a2a83c08e",
+      "name": "Wait Before Retry",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        4112
+      ],
+      "webhookId": "68b0eb34-439d-404f-9de3-c0191955c67f"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Incident Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Email Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Email Attachments": {
+      "main": [
+        [
+          {
+            "node": "Normalize Email Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Incident Trigger": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Normalize Webhook Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form Incident Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Form Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Email Input": {
+      "main": [
+        [
+          {
+            "node": "Merge All Incident Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Webhook Input": {
+      "main": [
+        [
+          {
+            "node": "Merge All Incident Sources",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Normalize Form Input": {
+      "main": [
+        [
+          {
+            "node": "Merge All Incident Sources",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge All Incident Sources": {
+      "main": [
+        [
+          {
+            "node": "Validate Input Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input Data": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Log Raw Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Raw Incident": {
+      "main": [
+        [
+          {
+            "node": "AI Incident Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Incident Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Incident Classifier",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Incident Classifier": {
+      "main": [
+        [
+          {
+            "node": "Validate AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate AI Output": {
+      "main": [
+        [
+          {
+            "node": "Check AI Confidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check AI Confidence": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Incident Schema",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apply Fallback Defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Fallback Defaults": {
+      "main": [
+        [
+          {
+            "node": "Merge Validated Incidents",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prepare Final Incident Schema": {
+      "main": [
+        [
+          {
+            "node": "Merge Validated Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Validated Incidents": {
+      "main": [
+        [
+          {
+            "node": "Log Workflow Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Workflow Step": {
+      "main": [
+        [
+          {
+            "node": "Route by Category and Severity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Category and Severity": {
+      "main": [
+        [
+          {
+            "node": "Create Jira Ticket - Critical",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Jira Ticket - Security",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Zendesk Ticket - Standard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create ServiceNow Ticket - Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Ticket - Critical": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack - Critical",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Jira Ticket - Security": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack - Security",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Zendesk Ticket - Standard": {
+      "main": [
+        [
+          {
+            "node": "Notify Teams - Standard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create ServiceNow Ticket - Default": {
+      "main": [
+        [
+          {
+            "node": "Notify Teams - Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Slack - Critical": {
+      "main": [
+        [
+          {
+            "node": "Store Incident - Critical",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Slack - Security": {
+      "main": [
+        [
+          {
+            "node": "Store Incident - Security",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Teams - Standard": {
+      "main": [
+        [
+          {
+            "node": "Store Incident - Standard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Teams - Default": {
+      "main": [
+        [
+          {
+            "node": "Store Incident - Default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler Trigger": {
+      "main": [
+        [
+          {
+            "node": "Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Error": {
+      "main": [
+        [
+          {
+            "node": "Alert Error to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Error to Slack": {
+      "main": [
+        [
+          {
+            "node": "Wait Before Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "2d647311-b000-44dc-8cd4-eef47a02bfb6",
+  "meta": {
+    "instanceId": "6c8bfe9e9f7ecc05e8fe5f09620e16e03759410071a7c053ab90590a5cc5c479"
+  },
+  "id": "xinVS0wNiKA4PuW4",
+  "tags": []
+}
