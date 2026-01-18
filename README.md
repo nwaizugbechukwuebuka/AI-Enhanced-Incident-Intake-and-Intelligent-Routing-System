@@ -19,7 +19,7 @@ This workflow is engineered for **Security Operations Centers (SOC)**, **IT Oper
 
 ---
 
-## 🎥 Project Walkthrough Video
+## 🎥 Project Walkthrough
 
 This system demonstrates how AI and workflow automation can eliminate manual triage, reduce analyst fatigue, and accelerate incident response.
 
@@ -33,8 +33,6 @@ This system demonstrates how AI and workflow automation can eliminate manual tri
 7. **Notifications:** Slack and Teams receive structured alerts.  
 8. **Storage:** Raw and processed incidents are logged in PostgreSQL.
 
-**▶️ Walkthrough Video:**  
-*(Insert your YouTube link here)*
 
 **Suggested Narration Outline:**
 - Introduce the operational problem (manual triage, inconsistent classification).  
@@ -245,10 +243,10 @@ MIT License © 2025 Chukwuebuka Tobiloba Nwaizugbe
 
 <div align="center">
 
-GitHub [(github.com in Bing)](https://www.bing.com/search?q="https%3A%2F%2Fgithub.com%2Fnwaizugbechukwuebuka")  
-LinkedIn [(linkedin.com in Bing)](https://www.bing.com/search?q="https%3A%2F%2Fwww.linkedin.com%2Fin%2Fchukwuebuka-tobiloba-nwaizugbe%2F")  
-X / Twitter [(x.com in Bing)](https://www.bing.com/search?q="https%3A%2F%2Fx.com%2FDeepWorkSociety")  
-[Discord](https://discord.gg/TY9uwSgK)
+[![GitHub](https://img.shields.io/badge/GitHub-nwaizugbechukwuebuka-181717.svg?style=flat&logo=github)](https://github.com/nwaizugbechukwuebuka/SecureOps_AI)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077b5.svg?style=flat&logo=linkedin)](https://www.linkedin.com/in/chukwuebuka-tobiloba-nwaizugbe/)  
+[![X (Twitter)](https://img.shields.io/badge/Follow%20us%20on-X-000000?logo=x&logoColor=white&style=for-the-badge)](https://x.com/DeepWorkSociety)
+[![Discord](https://img.shields.io/badge/Join%20us%20on-Discord-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/TY9uwSgK)
 
 </div>
 
