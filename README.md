@@ -96,7 +96,6 @@ incident = {
 
 ## 🏗️ Architecture
 
-```mermaid
 graph TB
     A[Email Trigger] --> D[Normalize Input]
     B[Webhook Trigger] --> D
